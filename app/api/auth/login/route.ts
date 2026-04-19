@@ -19,8 +19,9 @@ export async function POST(request: Request) {
       )
     }
 
-    // Jika berhasil, set Cookie sesi di browser
-    cookies().set("admin_session", data.session.access_token, {
+    // PERBAIKAN: Tambahkan await pada cookies()
+    const cookieStore = await cookies()
+    cookieStore.set("admin_session", data.session.access_token, {
       httpOnly: true, // Sangat aman, tidak bisa dicuri lewat Javascript (XSS)
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24, // 1 hari

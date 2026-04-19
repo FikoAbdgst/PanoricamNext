@@ -6,24 +6,55 @@ export default function AdminLogin() {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Hubungkan ke API Login Backend Anda nanti
-    // Contoh sederhana untuk mengarahkan langsung ke dashboard:
-    if (email && password) {
-      router.push("/admin")
+    setError("")
+    setIsLoading(true)
+
+    try {
+      // Memanggil API backend Next.js yang sudah kita buat
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Jika berhasil, arahkan ke dashboard
+        router.push("/admin")
+      } else {
+        // Jika gagal (password/email salah), tampilkan pesan error
+        setError(data.message || "Gagal login. Silakan coba lagi.")
+      }
+    } catch (err) {
+      setError("Terjadi kesalahan jaringan. Coba lagi.")
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 font-['Poppins']">
-      <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-lg">
+      <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-lg border-t-4 border-[#BF3131]">
         <div className="flex justify-center mb-8">
           <h1 className="text-2xl font-bold text-center text-gray-800">
-            Admin Login
+            Panoricam Admin
           </h1>
         </div>
+
+        {/* Notifikasi Error */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded-lg border border-red-200">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleLogin}>
           <div className="mb-4">
@@ -39,7 +70,8 @@ export default function AdminLogin() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isLoading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#BF3131] disabled:bg-gray-100"
             />
           </div>
 
@@ -56,16 +88,22 @@ export default function AdminLogin() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isLoading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#BF3131] disabled:bg-gray-100"
             />
           </div>
 
           <div className="flex items-center justify-between">
             <button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors w-full"
+              disabled={isLoading}
+              className="bg-[#BF3131] hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors w-full flex justify-center items-center"
             >
-              Login
+              {isLoading ? (
+                <span className="animate-pulse">Memverifikasi...</span>
+              ) : (
+                "Login"
+              )}
             </button>
           </div>
         </form>

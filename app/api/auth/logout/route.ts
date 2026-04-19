@@ -4,11 +4,11 @@ import { supabaseAdmin } from "@/lib/supabase"
 
 export async function POST() {
   try {
-    // Opsional: Jika menggunakan Supabase Auth penuh, sign out juga dari server
     await supabaseAdmin.auth.signOut()
 
-    // Hapus cookie sesi
-    cookies().delete("admin_session")
+    // PERBAIKAN: Tambahkan await pada cookies()
+    const cookieStore = await cookies()
+    cookieStore.delete("admin_session")
 
     return NextResponse.json(
       { success: true, message: "Berhasil logout" },

@@ -1,11 +1,12 @@
 "use client"
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+  const router = useRouter() // Tambahkan router untuk redirect
 
   // Mencegah scroll saat sidebar mobile terbuka
   useEffect(() => {
@@ -17,6 +18,25 @@ export default function Sidebar() {
   }, [isOpen])
 
   const toggleSidebar = () => setIsOpen(!isOpen)
+
+  // Fungsi untuk handle Logout
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("/api/auth/logout", {
+        method: "POST",
+      })
+      const data = await res.json()
+
+      if (data.success) {
+        // Jika berhasil dihapus sesinya, lempar kembali ke halaman login
+        router.push("/login")
+      } else {
+        alert("Gagal logout: " + data.message)
+      }
+    } catch (error) {
+      alert("Terjadi kesalahan jaringan saat logout.")
+    }
+  }
 
   const menuItems = [
     {
@@ -211,9 +231,7 @@ export default function Sidebar() {
         {/* Logout Button */}
         <div className="p-4 border-t border-gray-700">
           <button
-            onClick={() =>
-              alert("Fungsi logout akan dihubungkan ke backend nanti")
-            }
+            onClick={handleLogout}
             className="w-full flex items-center justify-center bg-red-700 py-3 px-4 rounded-lg text-white hover:bg-red-800 transition-colors"
           >
             <svg
