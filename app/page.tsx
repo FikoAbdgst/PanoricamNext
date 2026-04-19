@@ -2,10 +2,10 @@
 
 import { useEffect } from "react"
 import AOS from "aos"
-import Content from "./components/Content"
-import Hero from "./components/Hero"
-import HowItWorks from "./components/HowItWorks"
-import Testimoni from "./components/Testimoni"
+import Hero from "@/components/Hero"
+import Content from "@/components/Content"
+import HowItWorks from "@/components/HowItWorks"
+import Testimoni from "@/components/Testimoni"
 
 export default function Home() {
   // Inisialisasi AOS saat komponen pertama kali di-render (Client-side)

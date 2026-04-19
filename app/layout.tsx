@@ -1,30 +1,40 @@
+"use client"
 import "./globals.css"
-import "aos/dist/aos.css" // Import AOS global style
+import "aos/dist/aos.css"
 import { Poppins } from "next/font/google"
-import Navbar from "./components/Navbar"
-import Footer from "./components/Footer"
+import Navbar from "@/components/Navbar"
+import Footer from "@/components/Footer"
+import { usePathname } from "next/navigation"
 
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 })
 
-export const metadata = {
-  title: "Photobooth App",
-  description: "Abadikan momen spesial kamu",
-}
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const pathname = usePathname()
+
+  // Cek apakah URL saat ini adalah /admin (dan sub-foldernya) atau /login
+  const isAdminArea = pathname?.startsWith("/admin")
+  const isLoginArea = pathname?.startsWith("/login")
+
+  // Jika sedang di halaman admin atau login, sembunyikan Navbar & Footer User
+  const hideUserNavigation = isAdminArea || isLoginArea
+
   return (
     <html lang="id">
       <body className={`${poppins.className} bg-[#FEF3E2] overflow-x-hidden`}>
-        <Navbar />
+        {/* Render Navbar jika BUKAN di area Admin/Login */}
+        {!hideUserNavigation && <Navbar />}
+
         <main>{children}</main>
-        <Footer />
+
+        {/* Render Footer jika BUKAN di area Admin/Login */}
+        {!hideUserNavigation && <Footer />}
       </body>
     </html>
   )
